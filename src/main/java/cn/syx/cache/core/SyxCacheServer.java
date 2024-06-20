@@ -14,10 +14,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+@Slf4j
 @Component
 public class SyxCacheServer implements SyxCachePlugin {
 
@@ -54,12 +56,12 @@ public class SyxCacheServer implements SyxCachePlugin {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().addLast(new SyxCacheDecoder());
 //                            ch.pipeline().addLast(new RedisEncoder());
-                            ch.pipeline().addLast(new SyxCacheHandler());
+                            ch.pipeline().addLast(new SyxCacheHandler(new SyxCacheTask()));
                         }
                     });
 
             channel = b.bind(port).sync().channel();
-            System.out.println("开启netty cache服务器，监听端口为：" + port);
+            log.info("开启netty cache服务器，监听端口为：{}", port);
             channel.closeFuture().sync();
         } catch (Exception e) {
             throw new RuntimeException(e);
