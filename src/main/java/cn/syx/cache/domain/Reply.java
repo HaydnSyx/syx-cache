@@ -60,7 +60,7 @@ public class Reply<T> {
         return new Reply<>(value, errMsg);
     }
 
-    public static Reply<String> error(String errMsg) {
+    public static Reply error(String errMsg) {
         return new Reply<>(errMsg);
     }
 }

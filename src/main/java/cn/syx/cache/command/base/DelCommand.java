@@ -5,17 +5,17 @@ import cn.syx.cache.command.Command;
 import cn.syx.cache.core.SyxCacheHolder;
 import cn.syx.cache.domain.Reply;
 
-public class ExistsCommand extends AbstractCommand<Integer> {
+public class DelCommand extends AbstractCommand<Integer> {
 
     @Override
     public String name() {
-        return "EXISTS";
+        return "DEL";
     }
 
     @Override
     protected String checkArgs(String[] args) {
         if (args.length < 4) {
-            return "ERR wrong number of arguments for 'exists' command";
+            return "ERR wrong number of arguments for 'del' command";
         }
         return null;
     }
@@ -23,6 +23,7 @@ public class ExistsCommand extends AbstractCommand<Integer> {
     @Override
     public Reply<Integer> doExec(SyxCacheHolder cache, String[] args) {
         String[] keys = getKeys(args);
-        return Reply.integer(cache.exists(keys));
+        int count = cache.del(keys);
+        return Reply.integer(count);
     }
 }

@@ -56,7 +56,7 @@ public class SyxCacheTask implements Runnable {
             return;
         }
 
-        replyContext(chc, Reply.error("未知命令"));
+        replyContext(chc, Reply.error(String.format("ERR unknown command `%s`", cmd.toLowerCase(Locale.ROOT))));
     }
 
     private void errWrite(ChannelHandlerContext chc, String errMsg) {

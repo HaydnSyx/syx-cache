@@ -1,12 +1,13 @@
 package cn.syx.cache.command.string;
 
+import cn.syx.cache.command.AbstractCommand;
 import cn.syx.cache.command.Command;
 import cn.syx.cache.core.SyxCacheHolder;
 import cn.syx.cache.domain.Reply;
 
 import java.util.Objects;
 
-public class StrlenCommand implements Command<Integer> {
+public class StrlenCommand extends AbstractCommand<Integer> {
 
     @Override
     public String name() {
@@ -14,7 +15,12 @@ public class StrlenCommand implements Command<Integer> {
     }
 
     @Override
-    public Reply<Integer> exec(SyxCacheHolder cache, String[] args) {
+    protected String checkArgs(String[] args) {
+        return null;
+    }
+
+    @Override
+    public Reply<Integer> doExec(SyxCacheHolder cache, String[] args) {
         return Reply.integer(cache.strlen(getKey(args)));
     }
 }

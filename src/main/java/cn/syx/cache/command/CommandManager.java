@@ -1,19 +1,15 @@
 package cn.syx.cache.command;
 
-import cn.syx.cache.command.base.CommandCommand;
-import cn.syx.cache.command.base.ExistsCommand;
-import cn.syx.cache.command.base.InfoCommand;
-import cn.syx.cache.command.base.PingCommand;
+import cn.syx.cache.command.base.*;
 import cn.syx.cache.command.list.*;
 import cn.syx.cache.command.string.*;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CommandManager {
 
-    private static Map<String, Command<?>> COMMANDS = new LinkedHashMap<>();
+    private static final Map<String, Command<?>> COMMANDS = new LinkedHashMap<>();
 
     static {
         // ------------- Base -------------
@@ -21,11 +17,12 @@ public class CommandManager {
         register(new CommandCommand());
         register(new PingCommand());
         register(new ExistsCommand());
+        register(new DelCommand());
+        register(new KeysCommand());
 
         // ------------- String -------------
         register(new SetCommand());
         register(new GetCommand());
-        register(new DelCommand());
         register(new MSetCommand());
         register(new MGetCommand());
         register(new IncrCommand());

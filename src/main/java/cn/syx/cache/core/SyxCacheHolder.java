@@ -1,5 +1,6 @@
 package cn.syx.cache.core;
 
+import cn.syx.cache.command.utils.PatternUtil;
 import cn.syx.cache.domain.CacheEntity;
 
 import java.util.*;
@@ -22,20 +23,6 @@ public class SyxCacheHolder {
         return count;
     }
 
-    // ======================= String ============================
-
-    public void set(String key, String value) {
-        map.put(key, CacheEntity.create(value));
-    }
-
-    public String get(String key) {
-        CacheEntity<?> entity = map.get(key);
-        if (Objects.isNull(entity)) {
-            return null;
-        }
-        return (String) map.get(key).getData();
-    }
-
     public int del(String... keys) {
         int count = 0;
         if (Objects.isNull(keys)) {
@@ -48,6 +35,29 @@ public class SyxCacheHolder {
             }
         }
         return count;
+    }
+
+    public String[] keys(String pattern) {
+        String[] keys = map.keySet().toArray(String[]::new);
+        if (keys.length == 0) {
+            return null;
+        }
+
+        return PatternUtil.filterByPattern(keys, pattern);
+    }
+
+    // ======================= String ============================
+
+    public void set(String key, String value) {
+        map.put(key, CacheEntity.create(value));
+    }
+
+    public String get(String key) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return null;
+        }
+        return (String) map.get(key).getData();
     }
 
     public int strlen(String key) {

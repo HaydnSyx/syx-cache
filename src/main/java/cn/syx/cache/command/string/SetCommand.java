@@ -1,10 +1,11 @@
 package cn.syx.cache.command.string;
 
+import cn.syx.cache.command.AbstractCommand;
 import cn.syx.cache.command.Command;
 import cn.syx.cache.core.SyxCacheHolder;
 import cn.syx.cache.domain.Reply;
 
-public class SetCommand implements Command<String> {
+public class SetCommand extends AbstractCommand<String> {
 
     @Override
     public String name() {
@@ -12,7 +13,12 @@ public class SetCommand implements Command<String> {
     }
 
     @Override
-    public Reply<String> exec(SyxCacheHolder cache, String[] args) {
+    protected String checkArgs(String[] args) {
+        return null;
+    }
+
+    @Override
+    public Reply<String> doExec(SyxCacheHolder cache, String[] args) {
         if (args.length < 6) {
             return Reply.error("请求参数不足");
         }
