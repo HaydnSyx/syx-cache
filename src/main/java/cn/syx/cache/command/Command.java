@@ -21,6 +21,10 @@ public interface Command<T> {
         return args.length < 7 ? null : args[6];
     }
 
+    default String getValue(String[] args, int index) {
+        return args.length < index + 1 ? null : args[index];
+    }
+
     default String[] getKeys(String[] args) {
         int len = (args.length - 3) / 2;
         String[] keys = new String[len];

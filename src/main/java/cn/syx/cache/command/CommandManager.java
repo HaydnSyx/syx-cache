@@ -5,6 +5,7 @@ import cn.syx.cache.command.hash.*;
 import cn.syx.cache.command.list.*;
 import cn.syx.cache.command.set.*;
 import cn.syx.cache.command.string.*;
+import cn.syx.cache.command.zset.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,7 +57,12 @@ public class CommandManager {
         register(new HExistsCommand());
         register(new HMgetCommand());
         // ------------- zset -------------
-
+        register(new ZAddCommand());
+        register(new ZCardCommand());
+        register(new ZScoreCommand());
+        register(new ZCountCommand());
+        register(new ZRankCommand());
+        register(new ZRemCommand());
     }
 
     public static void register(Command<?> command) {
