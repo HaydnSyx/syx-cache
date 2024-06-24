@@ -48,6 +48,15 @@ public interface Command<T> {
         return pairs;
     }
 
+    default List<Pair<String, String>> getHashPairs(String[] args) {
+        int len = (args.length - 5) / 4;
+        List<Pair<String, String>> pairs = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            pairs.add(Pair.of(args[6 + i * 4], args[8 + i * 4]));
+        }
+        return pairs;
+    }
+
     String name();
 
     Reply<T> exec(SyxCacheHolder cache, String[] args);

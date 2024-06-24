@@ -1,6 +1,7 @@
 package cn.syx.cache.command;
 
 import cn.syx.cache.command.base.*;
+import cn.syx.cache.command.hash.*;
 import cn.syx.cache.command.list.*;
 import cn.syx.cache.command.set.*;
 import cn.syx.cache.command.string.*;
@@ -47,7 +48,13 @@ public class CommandManager {
         register(new SRemCommand());
         register(new SPopCommand());
         // ------------- hash -------------
-
+        register(new HSetCommand());
+        register(new HGetCommand());
+        register(new HGetallCommand());
+        register(new HDelCommand());
+        register(new HLenCommand());
+        register(new HExistsCommand());
+        register(new HMgetCommand());
         // ------------- zset -------------
 
     }

@@ -6,6 +6,7 @@ import cn.syx.cache.domain.CacheEntity;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SyxCacheHolder {
 
@@ -325,5 +326,118 @@ public class SyxCacheHolder {
             set.remove(res[i]);
         }
         return res;
+    }
+
+    // ======================= hash ============================
+
+    public Integer hset(String key, String[] hkeys, String[] hvalues) {
+        if (Objects.isNull(hkeys) || Objects.isNull(hvalues)
+                || hkeys.length == 0
+                || hvalues.length == 0
+                || hkeys.length != hvalues.length) {
+            return 0;
+        }
+
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            entity = CacheEntity.create(new LinkedHashMap<String, String>());
+            map.put(key, entity);
+        }
+
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
+        int count = 0;
+        for (int i = 0; i < hkeys.length; i++) {
+            if (map.put(hkeys[i], hvalues[i]) == null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public String hget(String key, String value) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return null;
+        }
+
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
+        if (Objects.isNull(map)) {
+            return null;
+        }
+
+        return map.get(value);
+    }
+
+    public String[] hgetall(String key) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return new String[0];
+        }
+
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
+        if (Objects.isNull(map)) {
+            return new String[0];
+        }
+
+        return map.entrySet().stream()
+                .flatMap(e -> Stream.of(e.getKey(), e.getValue()))
+                .toArray(String[]::new);
+    }
+
+    public Integer hdel(String key, String[] hkeys) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return 0;
+        }
+
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
+        if (Objects.isNull(map)) {
+            return 0;
+        }
+
+        long count = Arrays.stream(hkeys).filter(e-> Objects.nonNull(map.remove(e))).count();
+        return (int) count;
+    }
+
+    public Integer hexists(String key, String value) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return 0;
+        }
+
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
+        if (Objects.isNull(map)) {
+            return 0;
+        }
+
+        return map.containsKey(value) ? 1 : 0;
+    }
+
+    public String[] hmget(String key, String[] hkeys) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return new String[hkeys.length];
+        }
+
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
+        if (Objects.isNull(map)) {
+            return new String[hkeys.length];
+        }
+
+        return Arrays.stream(hkeys).map(map::get).toArray(String[]::new);
+    }
+
+    public Integer hlen(String key) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return 0;
+        }
+
+        LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
+        if (Objects.isNull(map)) {
+            return 0;
+        }
+
+        return map.size();
     }
 }
