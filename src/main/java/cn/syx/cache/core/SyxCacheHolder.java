@@ -4,6 +4,8 @@ import cn.syx.cache.command.utils.PatternUtil;
 import cn.syx.cache.domain.CacheEntity;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class SyxCacheHolder {
 
@@ -232,6 +234,95 @@ public class SyxCacheHolder {
         String[] res = new String[len];
         for (int i = 0; i < len; i++) {
             res[i] = link.get(start + i);
+        }
+        return res;
+    }
+
+    // ======================= set ============================
+    public Integer sadd(String key, String[] values) {
+        if (Objects.isNull(values)) {
+            return 0;
+        }
+
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            entity = CacheEntity.create(new LinkedHashSet<>());
+            map.put(key, entity);
+        }
+
+        LinkedHashSet<String> set = (LinkedHashSet<String>) entity.getData();
+        long count = Arrays.stream(values).filter(e -> !set.contains(e)).peek(set::add).count();
+        return (int) count;
+    }
+
+    public String[] smembers(String key) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return new String[0];
+        }
+        LinkedHashSet<String> set = (LinkedHashSet<String>) entity.getData();
+        if (Objects.isNull(set)) {
+            return new String[0];
+        }
+        return set.toArray(String[]::new);
+    }
+
+    public Integer scard(String key) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return 0;
+        }
+        LinkedHashSet<String> set = (LinkedHashSet<String>) entity.getData();
+        if (Objects.isNull(set)) {
+            return 0;
+        }
+        return set.size();
+    }
+
+    public Integer sismember(String key, String value) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return 0;
+        }
+        LinkedHashSet<String> set = (LinkedHashSet<String>) entity.getData();
+        if (Objects.isNull(set)) {
+            return 0;
+        }
+        return set.contains(value) ? 1 : 0;
+    }
+
+    public Integer srem(String keys, String[] setKeys) {
+        CacheEntity<?> entity = map.get(keys);
+        if (Objects.isNull(entity)) {
+            return 0;
+        }
+
+        LinkedHashSet<String> set = (LinkedHashSet<String>) entity.getData();
+        if (Objects.isNull(set)) {
+            return 0;
+        }
+
+        long count = Arrays.stream(setKeys).filter(set::remove).count();
+        return (int) count;
+    }
+
+    public String[] spop(String key, int count) {
+        CacheEntity<?> entity = map.get(key);
+        if (Objects.isNull(entity)) {
+            return null;
+        }
+
+        LinkedHashSet<String> set = (LinkedHashSet<String>) entity.getData();
+        if (Objects.isNull(set)) {
+            return null;
+        }
+
+        int len = Math.min(count, set.size());
+        String[] res = new String[len];
+        for (int i = 0; i < len; i++) {
+            int index = ThreadLocalRandom.current().nextInt(set.size());
+            res[i] = set.toArray(String[]::new)[index];
+            set.remove(res[i]);
         }
         return res;
     }

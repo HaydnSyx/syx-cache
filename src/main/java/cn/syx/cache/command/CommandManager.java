@@ -2,6 +2,7 @@ package cn.syx.cache.command;
 
 import cn.syx.cache.command.base.*;
 import cn.syx.cache.command.list.*;
+import cn.syx.cache.command.set.*;
 import cn.syx.cache.command.string.*;
 
 import java.util.LinkedHashMap;
@@ -12,7 +13,7 @@ public class CommandManager {
     private static final Map<String, Command<?>> COMMANDS = new LinkedHashMap<>();
 
     static {
-        // ------------- Base -------------
+        // ------------- base -------------
         register(new InfoCommand());
         register(new CommandCommand());
         register(new PingCommand());
@@ -20,7 +21,7 @@ public class CommandManager {
         register(new DelCommand());
         register(new KeysCommand());
 
-        // ------------- String -------------
+        // ------------- string -------------
         register(new SetCommand());
         register(new GetCommand());
         register(new MSetCommand());
@@ -29,7 +30,7 @@ public class CommandManager {
         register(new DecrCommand());
         register(new StrlenCommand());
 
-        // ------------- List -------------
+        // ------------- list -------------
         register(new LPushCommand());
         register(new RPushCommand());
         register(new LPopCommand());
@@ -37,6 +38,18 @@ public class CommandManager {
         register(new LLenCommand());
         register(new LIndexCommand());
         register(new LRangeCommand());
+
+        // ------------- set -------------
+        register(new SAddCommand());
+        register(new SCardCommand());
+        register(new SMembersCommand());
+        register(new SIsmemberCommand());
+        register(new SRemCommand());
+        register(new SPopCommand());
+        // ------------- hash -------------
+
+        // ------------- zset -------------
+
     }
 
     public static void register(Command<?> command) {

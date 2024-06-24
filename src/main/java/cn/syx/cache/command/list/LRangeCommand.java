@@ -18,7 +18,7 @@ public class LRangeCommand extends AbstractCommand {
     }
 
     @Override
-    public Reply doExec(SyxCacheHolder cache, String[] args) {
+    public Reply<?> doExec(SyxCacheHolder cache, String[] args) {
         String key = getKey(args);
         String[] values = getValues(args);
         int start = Integer.parseInt(values[0]);

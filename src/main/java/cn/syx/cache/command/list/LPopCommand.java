@@ -18,7 +18,7 @@ public class LPopCommand extends AbstractCommand {
     }
 
     @Override
-    public Reply doExec(SyxCacheHolder cache, String[] args) {
+    public Reply<?> doExec(SyxCacheHolder cache, String[] args) {
         String key = getKey(args);
         int count = 1;
         if (args.length > 6) {
