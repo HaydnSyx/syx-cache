@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 public class CacheCommandRequest {
 
-    private boolean checkMemory;
     private int paramNum;
     
     private String[] params;

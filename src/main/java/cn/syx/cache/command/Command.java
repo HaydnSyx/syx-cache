@@ -7,10 +7,6 @@ import io.netty.channel.ChannelHandlerContext;
 
 public interface Command<T> {
 
-    String CRLF = "\r\n";
-
-    String OK = "OK";
-
     String name();
 
     default boolean checkMemory() {

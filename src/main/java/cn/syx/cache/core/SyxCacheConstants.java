@@ -17,6 +17,7 @@ public class SyxCacheConstants {
     public static final Long ZERO = 0L;
     public static final Long NEGATIVE_ONE = -1L;
 
+    public static final String OK_STRING = "OK";
     public static final String ZERO_STRING = "0";
     public static final String NEGATIVE_ONE_STRING = "-1";
 

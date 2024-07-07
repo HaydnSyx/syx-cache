@@ -14,6 +14,11 @@ public class AppendCommand extends AbstractCommand<Integer> {
     }
 
     @Override
+    public boolean checkMemory() {
+        return true;
+    }
+
+    @Override
     protected String checkArgs(CacheCommandRequest req) {
         if (req.getParamNum() > 2) {
             return "请求格式不符合set规范";

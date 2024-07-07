@@ -41,12 +41,14 @@ public abstract class AbstractCommand<T> implements Command<T> {
     protected Reply<T> beforeExec(ChannelHandlerContext ctx, SyxCacheDb db, CacheCommandRequest req) {
         GenericCommandTool.isExpire(db, req.getKey());
 
-        if (req.isCheckMemory()) {
+        if (checkMemory()) {
             SyxCacheMonitor monitor = SingletonUtil.getInstance(SyxCacheMonitor.class);
-            boolean overLimit = monitor.isOverLimit();
-            if (overLimit) {
-                // todo 判断淘汰机制
-                return Reply.error("over memory size");
+            if (monitor.isCheckFlag()) {
+                boolean overLimit = monitor.isOverLimit();
+                if (overLimit) {
+                    // todo 判断淘汰机制
+                    return Reply.error("over memory size");
+                }
             }
         }
 

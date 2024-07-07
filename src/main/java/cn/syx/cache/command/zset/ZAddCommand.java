@@ -18,6 +18,11 @@ public class ZAddCommand extends AbstractCommand<Integer> {
     }
 
     @Override
+    public boolean checkMemory() {
+        return true;
+    }
+
+    @Override
     protected String checkArgs(CacheCommandRequest req) {
         return null;
     }

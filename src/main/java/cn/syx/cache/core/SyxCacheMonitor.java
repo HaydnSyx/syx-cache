@@ -2,6 +2,7 @@ package cn.syx.cache.core;
 
 import cn.syx.cache.db.SyxCacheDb;
 import io.github.haydnsyx.toolbox.base.ThreadTool;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.util.RamUsageEstimator;
 
@@ -14,6 +15,7 @@ public class SyxCacheMonitor {
     private final SyxCacheDb[] DBS;
     private Thread monitorThread;
 
+    @Getter
     private boolean checkFlag;
 
     // 使用堆内内存来模仿redis内存淘汰机制

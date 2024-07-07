@@ -49,8 +49,6 @@ public class SyxCacheTask implements Runnable {
         if (Objects.isNull(command)) {
             reply = Reply.error(String.format("ERR unknown command `%s`", cmd.toLowerCase(Locale.ROOT)));
         } else {
-            req.setCheckMemory(command.checkMemory());
-
             reply = command.exec(ctx, DBS[dbNum], req);
             log.info("[{}][{}] ===>: {}", dbNum, cmd, JSON.toJSONString(reply.getValue()));
         }
