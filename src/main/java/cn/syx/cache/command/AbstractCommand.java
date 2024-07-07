@@ -5,10 +5,12 @@ import cn.syx.cache.core.SyxCacheTimeWheel;
 import cn.syx.cache.command.tool.GenericCommandTool;
 import cn.syx.cache.db.SyxCacheDb;
 import cn.syx.cache.domain.CacheCommandRequest;
+import cn.syx.cache.domain.ExpulsionResult;
 import cn.syx.cache.domain.Reply;
 import cn.syx.cache.utils.SingletonUtil;
 import io.github.haydnsyx.toolbox.base.StringTool;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.lucene.util.RamUsageEstimator;
 
 import java.util.Objects;
 
@@ -41,13 +43,19 @@ public abstract class AbstractCommand<T> implements Command<T> {
     protected Reply<T> beforeExec(ChannelHandlerContext ctx, SyxCacheDb db, CacheCommandRequest req) {
         GenericCommandTool.isExpire(db, req.getKey());
 
+        // 判断该命令是否需要检查空间足够
         if (checkMemory()) {
             SyxCacheMonitor monitor = SingletonUtil.getInstance(SyxCacheMonitor.class);
+            // 判断是否需要检查空间
             if (monitor.isCheckFlag()) {
                 boolean overLimit = monitor.isOverLimit();
+                // 判断是否超过空间大小
                 if (overLimit) {
-                    // todo 判断淘汰机制
-                    return Reply.error("over memory size");
+                    // 执行该db下的驱逐策略
+                    ExpulsionResult result = db.expulsion(RamUsageEstimator.sizeOf(req.getParams()));
+                    if (!result.isSuccess()) {
+                        return Reply.error(result.getErrorMsg());
+                    }
                 }
             }
         }
