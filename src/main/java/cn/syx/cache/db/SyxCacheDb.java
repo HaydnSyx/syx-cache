@@ -13,19 +13,19 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 public class SyxCacheDb {
 
-    private final ExpulsionTypeEnums expulsionType;
+    private final EvictionTypeEnums evictionType;
     private final int num;
     private final Map<String, CacheEntity<?>> map = new HashMap<>();
     private final Map<String, Long> expireMap = new HashMap<>();
 
     public SyxCacheDb(int num) {
         this.num = num;
-        this.expulsionType = ExpulsionTypeEnums.NO_ENVICTION;
+        this.evictionType = EvictionTypeEnums.NO_ENVICTION;
     }
 
-    public SyxCacheDb(int num, ExpulsionTypeEnums expulsionType) {
+    public SyxCacheDb(int num, EvictionTypeEnums expulsionType) {
         this.num = num;
-        this.expulsionType = expulsionType;
+        this.evictionType = expulsionType;
     }
 
     public long dataMemorySize() {
@@ -37,7 +37,7 @@ public class SyxCacheDb {
     }
 
     public ExpulsionResult expulsion(long targetMemorySize) {
-        return switch (expulsionType) {
+        return switch (evictionType) {
             case NO_ENVICTION -> ExpulsionResult.fail("over memory size");
             case VOLATILE_LRU -> volatileLru(targetMemorySize);
             case ALLKEYS_LRU -> allkeysLru(targetMemorySize);

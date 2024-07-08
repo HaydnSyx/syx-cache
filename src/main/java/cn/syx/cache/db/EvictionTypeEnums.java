@@ -1,6 +1,6 @@
 package cn.syx.cache.db;
 
-public enum ExpulsionTypeEnums {
+public enum EvictionTypeEnums {
 
     NO_ENVICTION,
     VOLATILE_LRU,
