@@ -10,23 +10,85 @@ import org.apache.lucene.util.RamUsageEstimator;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Getter
+//@Getter
 public class SyxCacheDb {
 
     private final EvictionTypeEnums evictionType;
+    @Getter
     private final int num;
-    private final Map<String, CacheEntity<?>> map = new HashMap<>();
-    private final Map<String, Long> expireMap = new HashMap<>();
+    private final Map<String, CacheEntity<?>> map;
+    private final Map<String, Long> expireMap;
+
+//    private final ChronicleMap<String, CacheEntity> map;
+//    private final ChronicleMap<String, Long> expireMap;
 
     public SyxCacheDb(int num) {
-        this.num = num;
-        this.evictionType = EvictionTypeEnums.NO_ENVICTION;
+        this(num, EvictionTypeEnums.NO_ENVICTION);
     }
 
     public SyxCacheDb(int num, EvictionTypeEnums expulsionType) {
         this.num = num;
         this.evictionType = expulsionType;
+
+        map = new HashMap<>();
+        expireMap = new HashMap<>();
+
+        /*map = ChronicleMapBuilder
+                .of(String.class, CacheEntity.class)
+                .name("redis-db-" + num)
+                .entries(10_00_000)
+                .create();
+        expireMap = ChronicleMapBuilder
+                .of(String.class, Long.class)
+                .name("redis-expire-map-" + num)
+                .entries(10_00_000)
+                .create();*/
     }
+
+    public Set<String> keySet() {
+        return map.keySet();
+    }
+
+    public int size() {
+        return map.size();
+    }
+
+    public CacheEntity get(String key) {
+        return map.get(key);
+    }
+
+    public CacheEntity put(String key, CacheEntity entity) {
+        return map.put(key, entity);
+    }
+
+    public CacheEntity putIfAbsent(String key, CacheEntity entity) {
+        return map.putIfAbsent(key, entity);
+    }
+
+    public boolean containsKey(String key) {
+        return Objects.nonNull(get(key));
+    }
+
+    public CacheEntity remove(String key) {
+        return map.remove(key);
+    }
+
+    public Long getExpireTime(String key) {
+        return expireMap.get(key);
+    }
+
+    public Long putExpireTime(String key, long time) {
+        return expireMap.put(key, time);
+    }
+
+    public boolean existExpire(String key) {
+        return Objects.nonNull(getExpireTime(key));
+    }
+
+    public Long removeExpire(String key) {
+        return expireMap.remove(key);
+    }
+
 
     public long dataMemorySize() {
         return RamUsageEstimator.sizeOfMap(map);
@@ -72,11 +134,9 @@ public class SyxCacheDb {
 
         long size = 0;
         List<String> mapKeys = new ArrayList<>(map.keySet());
-        while (true) {
-            String key = mapKeys.get(ThreadLocalRandom.current().nextInt(mapKeys.size()));
-            if (keys.contains(key)) {
-                continue;
-            }
+        while (!mapKeys.isEmpty()) {
+            int index = ThreadLocalRandom.current().nextInt(mapKeys.size());
+            String key = mapKeys.remove(index);
 
             keys.add(key);
             CacheEntity<?> entity = map.get(key);
@@ -87,6 +147,10 @@ public class SyxCacheDb {
             }
         }
 
+        if (size < targetMemorySize) {
+            return handleResult(null);
+        }
+
         return handleResult(keys);
     }
 
@@ -95,11 +159,9 @@ public class SyxCacheDb {
 
         long size = 0;
         List<String> mapKeys = new ArrayList<>(expireMap.keySet());
-        while (true) {
-            String key = mapKeys.get(ThreadLocalRandom.current().nextInt(mapKeys.size()));
-            if (keys.contains(key)) {
-                continue;
-            }
+        while (!mapKeys.isEmpty()) {
+            int index = ThreadLocalRandom.current().nextInt(mapKeys.size());
+            String key = mapKeys.remove(index);
 
             keys.add(key);
             CacheEntity<?> entity = map.get(key);
@@ -108,6 +170,10 @@ public class SyxCacheDb {
             if (size >= targetMemorySize) {
                 break;
             }
+        }
+
+        if (size < targetMemorySize) {
+            return handleResult(null);
         }
 
         return handleResult(keys);

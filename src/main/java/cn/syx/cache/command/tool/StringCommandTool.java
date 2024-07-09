@@ -11,79 +11,79 @@ import java.util.Optional;
 public class StringCommandTool {
 
     public static int append(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
-            db.getMap().put(key, CacheEntity.create(value));
+            db.put(key, CacheEntity.create(value));
             return value.length();
         } else {
             String data = entity.getData() + value;
-            db.getMap().put(key, CacheEntity.create(data));
+            db.put(key, CacheEntity.create(data));
             return data.length();
         }
     }
 
     public static void set(SyxCacheDb db, String key, String value) {
-        db.getMap().put(key, CacheEntity.create(value));
+        db.put(key, CacheEntity.create(value));
     }
 
     public static Integer setrange(SyxCacheDb db, String key, int start, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
-        String data = (String) db.getMap().get(key).getData();
+        String data = (String) db.get(key).getData();
         if (start < 0) {
             start = data.length() + start + 1;
         }
         String result = data.substring(0, start) + value;
-        db.getMap().put(key, CacheEntity.create(result));
+        db.put(key, CacheEntity.create(result));
         return result.length();
     }
 
     public static int setnx(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
-            db.getMap().put(key, CacheEntity.create(value));
+            db.put(key, CacheEntity.create(value));
             return NumberTool.INT_ONE;
         }
         return NumberTool.INT_ZERO;
     }
 
     public static String get(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
-        return (String) db.getMap().get(key).getData();
+        return (String) entity.getData();
     }
 
     public static String getdel(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
-        if (db.getMap().get(key).getData() instanceof String s) {
+        if (db.get(key).getData() instanceof String s) {
             return s;
         }
         return null;
     }
 
     public static String getset(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
-        String data = (String) db.getMap().get(key).getData();
-        db.getMap().put(key, CacheEntity.create(value));
+        String data = (String) db.get(key).getData();
+        db.put(key, CacheEntity.create(value));
         return data;
     }
 
     public static String getrange(SyxCacheDb db, String key, int start, int end) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
-        String data = (String) db.getMap().get(key).getData();
+        String data = (String) db.get(key).getData();
         if (start < 0) {
             start = data.length() + start + 1;
         }
@@ -116,7 +116,7 @@ public class StringCommandTool {
         }
 
         for (int i = 0; i < keys.length; i++) {
-            db.getMap().put(keys[i], CacheEntity.create(values[i]));
+            db.put(keys[i], CacheEntity.create(values[i]));
         }
     }
 
@@ -139,7 +139,7 @@ public class StringCommandTool {
         String value = get(db, key);
         int data = Optional.ofNullable(value).map(Integer::parseInt).orElse(NumberTool.INT_ZERO);
         int result = data + num;
-        db.getMap().put(key, CacheEntity.create(result));
+        db.put(key, CacheEntity.create(result + ""));
         return result;
     }
 
@@ -151,7 +151,7 @@ public class StringCommandTool {
         String value = get(db, key);
         int data = Optional.ofNullable(value).map(Integer::parseInt).orElse(NumberTool.INT_ZERO);
         int result = data - num;
-        db.getMap().put(key, CacheEntity.create(result));
+        db.put(key, CacheEntity.create(result + ""));
         return result;
     }
 }

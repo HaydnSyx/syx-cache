@@ -14,10 +14,10 @@ public class ListCommandTool {
             return 0;
         }
 
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             entity = CacheEntity.create(new LinkedList<String>());
-            db.getMap().put(key, entity);
+            db.put(key, entity);
         }
 
         LinkedList<String> link = (LinkedList<String>) entity.getData();
@@ -26,7 +26,7 @@ public class ListCommandTool {
     }
 
     public static String[] lpop(SyxCacheDb db, String key, int count) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
@@ -49,10 +49,10 @@ public class ListCommandTool {
             return 0;
         }
 
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             entity = CacheEntity.create(new LinkedList<String>());
-            db.getMap().put(key, entity);
+            db.put(key, entity);
         }
 
         LinkedList<String> link = (LinkedList<String>) entity.getData();
@@ -61,7 +61,7 @@ public class ListCommandTool {
     }
 
     public static String[] rpop(SyxCacheDb db, String key, int count) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
@@ -80,7 +80,7 @@ public class ListCommandTool {
     }
 
     public static int llen(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -92,7 +92,7 @@ public class ListCommandTool {
     }
 
     public static String lindex(SyxCacheDb db, String key, int index) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
@@ -108,7 +108,7 @@ public class ListCommandTool {
     }
 
     public static String[] lrange(SyxCacheDb db, String key, int start, int end) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
@@ -125,10 +125,6 @@ public class ListCommandTool {
             end = size - 1;
         }
         int len = Math.min(end - start + 1, size);
-        String[] res = new String[len];
-        for (int i = 0; i < len; i++) {
-            res[i] = link.get(start + i);
-        }
-        return res;
+        return link.stream().skip(start).limit(len).toArray(String []::new);
     }
 }

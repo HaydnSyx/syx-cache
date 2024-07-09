@@ -41,7 +41,11 @@ public class SyxRespEncoder extends MessageToByteEncoder<Reply<?>> {
         return DOLLAR_STRING + NEGATIVE_ONE_STRING + CRLF_STRING;
     }
     private String numberEncoder(Number value) {
-        return COLON_STRING + value.toString() + CRLF_STRING;
+        if (Objects.isNull(value)) {
+            return nilEncoder();
+        }
+
+        return COLON_STRING + value + CRLF_STRING;
     }
 
     private String simpleEncoder(String content) {

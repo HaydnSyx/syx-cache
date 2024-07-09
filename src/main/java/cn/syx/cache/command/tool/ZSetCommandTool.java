@@ -3,12 +3,12 @@ package cn.syx.cache.command.tool;
 import cn.syx.cache.db.SyxCacheDb;
 import cn.syx.cache.domain.CacheEntity;
 import cn.syx.cache.domain.ZSetCacheEntity;
+import io.github.haydnsyx.toolbox.base.CollectionTool;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class ZSetCommandTool {
 
@@ -20,10 +20,10 @@ public class ZSetCommandTool {
             return 0;
         }
 
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             entity = CacheEntity.create(new LinkedHashSet<ZSetCacheEntity<String>>());
-            db.getMap().put(key, entity);
+            db.put(key, entity);
         }
 
         LinkedHashSet<ZSetCacheEntity<String>> zset = (LinkedHashSet<ZSetCacheEntity<String>>) entity.getData();
@@ -48,7 +48,7 @@ public class ZSetCommandTool {
     }
 
     public static Integer zcard(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -58,11 +58,11 @@ public class ZSetCommandTool {
             return 0;
         }
 
-        return db.getMap().size();
+        return map.size();
     }
 
     public static BigDecimal zscore(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
@@ -83,7 +83,7 @@ public class ZSetCommandTool {
     }
 
     public static Integer zcount(SyxCacheDb db, String key, BigDecimal start, BigDecimal end) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -99,7 +99,7 @@ public class ZSetCommandTool {
     }
 
     public static Integer zrank(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
@@ -120,7 +120,7 @@ public class ZSetCommandTool {
     }
 
     public static Integer zrem(SyxCacheDb db, String key, String[] setKeys) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -134,5 +134,73 @@ public class ZSetCommandTool {
                 .filter(e -> map.removeIf(z -> Objects.equals(z.getData(), e)))
                 .count();
         return (int) count;
+    }
+
+    public static String[] zpopmin(SyxCacheDb db, String key, int num) {
+        CacheEntity<?> entity = db.get(key);
+        if (Objects.isNull(entity)) {
+            return null;
+        }
+
+        LinkedHashSet<ZSetCacheEntity<String>> map = (LinkedHashSet<ZSetCacheEntity<String>>) entity.getData();
+        if (Objects.isNull(map)) {
+            return null;
+        }
+
+        List<ZSetCacheEntity<String>> elements = map.stream()
+                .sorted(Comparator.comparing(ZSetCacheEntity::getScore))
+                .limit(num).toList();
+
+        if (CollectionTool.isEmpty(elements)) {
+            return null;
+        }
+
+        String[] keys = new String[elements.size()];
+        String[] results = new String[elements.size() * 2];
+
+        for (int i = 0; i < elements.size(); i++) {
+            ZSetCacheEntity<String> zsetEntity = elements.get(i);
+            keys[i] = zsetEntity.getData();
+            results[i * 2] = zsetEntity.getData();
+            results[i * 2 + 1] = zsetEntity.getScore().toString();
+        }
+
+        zrem(db, key, keys);
+
+        return results;
+    }
+
+    public static String[] zpopmax(SyxCacheDb db, String key, int num) {
+        CacheEntity<?> entity = db.get(key);
+        if (Objects.isNull(entity)) {
+            return null;
+        }
+
+        LinkedHashSet<ZSetCacheEntity<String>> map = (LinkedHashSet<ZSetCacheEntity<String>>) entity.getData();
+        if (Objects.isNull(map)) {
+            return null;
+        }
+
+        List<ZSetCacheEntity<String>> elements = map.stream()
+                .sorted((a, b) -> b.getScore().compareTo(a.getScore()))
+                .limit(num).toList();
+
+        if (CollectionTool.isEmpty(elements)) {
+            return null;
+        }
+
+        String[] keys = new String[elements.size()];
+        String[] results = new String[elements.size() * 2];
+
+        for (int i = 0; i < elements.size(); i++) {
+            ZSetCacheEntity<String> zsetEntity = elements.get(i);
+            keys[i] = zsetEntity.getData();
+            results[i * 2] = zsetEntity.getData();
+            results[i * 2 + 1] = zsetEntity.getScore().toString();
+        }
+
+        zrem(db, key, keys);
+
+        return results;
     }
 }

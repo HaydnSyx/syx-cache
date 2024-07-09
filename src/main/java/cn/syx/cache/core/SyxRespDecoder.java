@@ -3,16 +3,15 @@ package cn.syx.cache.core;
 import cn.syx.cache.codec.*;
 import cn.syx.cache.codec.impl.*;
 import cn.syx.cache.domain.RedisMessage;
+import cn.syx.cache.utils.CodecUtil;
 import com.alibaba.fastjson2.JSON;
+import io.github.haydnsyx.toolbox.base.StringTool;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 public class SyxRespDecoder extends ByteToMessageDecoder {
@@ -65,11 +64,22 @@ public class SyxRespDecoder extends ByteToMessageDecoder {
         int mark = buffer.markReaderIndex().readerIndex();
 
         // 通过第一个字节解析协议
-        RespDecoder<?> decoder = DECODERS.get(determineReplyType(buffer));
+        byte b = buffer.readByte();
+        RespDecoder<?> decoder = DECODERS.get(determineReplyType(b));
+        // 可能是内联标记
         if (Objects.isNull(decoder)) {
-            log.info("decode buffer error, skip this because of unknown reply type");
-            // todo 跳过该位置 ? (不应该存在该情况)
-            return null;
+            log.info("decode buffer error, skip this because of unknown reply type, byte: {}", b);
+            // 重置到标记点
+            buffer.readerIndex(mark);
+            String content = CodecUtil.readLine(buffer);
+            log.info("decode buffer inline content: {}", content);
+            if (StringTool.isBlank(content)) {
+                // 重置到标记点
+                buffer.readerIndex(mark);
+                return null;
+            }
+
+            return (OUT) Arrays.stream(content.split(" ")).toList();
         }
 
         RedisMessage<?> content = decoder.decode(buffer);
@@ -83,9 +93,9 @@ public class SyxRespDecoder extends ByteToMessageDecoder {
         return (OUT) content.getData();
     }
 
-    private static SyxCacheConstants.ReplyType determineReplyType(ByteBuf buffer) {
+    private static SyxCacheConstants.ReplyType determineReplyType(Byte b) {
         // 读取第一个字节
-        return switch (buffer.readByte()) {
+        return switch (b) {
             case SyxCacheConstants.PLUS_BYTE -> SyxCacheConstants.ReplyType.SIMPLE_STRING;
             case SyxCacheConstants.MINUS_BYTE -> SyxCacheConstants.ReplyType.ERROR;
             case SyxCacheConstants.COLON_BYTE -> SyxCacheConstants.ReplyType.NUMBER;

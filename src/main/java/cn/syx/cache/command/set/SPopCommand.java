@@ -34,8 +34,8 @@ public class SPopCommand extends AbstractCommand {
 
         String[] spop = SetCommandTool.spop(db, key, count);
         if (flag) {
-            return Reply.array(Objects.isNull(spop) ? new String[0] : spop);
+            return Reply.array(Objects.isNull(spop) || spop.length == 0 ? new String[0] : spop);
         }
-        return Reply.bulkString(Objects.isNull(spop) ? null : spop[0]);
+        return Reply.bulkString(Objects.isNull(spop) || spop.length == 0 ? null : spop[0]);
     }
 }

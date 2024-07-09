@@ -55,7 +55,7 @@ public class SyxCacheMonitor {
     public int totalKeySize() {
         int size = 0;
         for (SyxCacheDb db : DBS) {
-            size = size + db.getMap().size();
+            size = size + db.size();
         }
         return size;
     }

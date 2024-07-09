@@ -23,8 +23,8 @@ public class ZCountCommand extends AbstractCommand<Integer> {
     @Override
     public Reply<Integer> doExec(SyxCacheDb db, CacheCommandRequest req) {
         String key = req.getKey();
-        BigDecimal start = new BigDecimal(req.getTarget(0));
-        BigDecimal end = new BigDecimal(req.getTarget(1));
+        BigDecimal start = new BigDecimal(req.getTarget(1));
+        BigDecimal end = new BigDecimal(req.getTarget(2));
         return Reply.number(ZSetCommandTool.zcount(db, key, start, end));
     }
 }

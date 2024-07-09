@@ -27,6 +27,7 @@ public class CommandManager {
         register(new DelCommand());
         register(new KeysCommand());
         register(new TtlCommand());
+        register(new ConfigGetCommand());
 
         // ------------- string -------------
         register(new AppendCommand());
@@ -77,6 +78,8 @@ public class CommandManager {
         register(new ZCountCommand());
         register(new ZRankCommand());
         register(new ZRemCommand());
+        register(new ZPopminCommand());
+        register(new ZPopmaxCommand());
     }
 
     public static void register(Command<?> command) {

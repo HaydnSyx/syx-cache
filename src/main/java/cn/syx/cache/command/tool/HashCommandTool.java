@@ -18,10 +18,10 @@ public class HashCommandTool {
             return 0;
         }
 
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             entity = CacheEntity.create(new LinkedHashMap<String, String>());
-            db.getMap().put(key, entity);
+            db.put(key, entity);
         }
 
         LinkedHashMap<String, String> map = (LinkedHashMap<String, String>) entity.getData();
@@ -35,7 +35,7 @@ public class HashCommandTool {
     }
 
     public static String hget(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }
@@ -49,7 +49,7 @@ public class HashCommandTool {
     }
 
     public static String[] hgetall(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return new String[0];
         }
@@ -65,7 +65,7 @@ public class HashCommandTool {
     }
 
     public static Integer hdel(SyxCacheDb db, String key, String[] hkeys) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -80,7 +80,7 @@ public class HashCommandTool {
     }
 
     public static Integer hexists(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -94,7 +94,7 @@ public class HashCommandTool {
     }
 
     public static String[] hmget(SyxCacheDb db, String key, String[] hkeys) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return new String[hkeys.length];
         }
@@ -108,7 +108,7 @@ public class HashCommandTool {
     }
 
     public static Integer hlen(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }

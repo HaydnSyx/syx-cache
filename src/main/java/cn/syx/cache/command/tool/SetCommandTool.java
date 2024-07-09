@@ -15,10 +15,10 @@ public class SetCommandTool {
             return 0;
         }
 
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             entity = CacheEntity.create(new LinkedHashSet<>());
-            db.getMap().put(key, entity);
+            db.put(key, entity);
         }
 
         LinkedHashSet<String> set = (LinkedHashSet<String>) entity.getData();
@@ -27,7 +27,7 @@ public class SetCommandTool {
     }
 
     public static String[] smembers(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return new String[0];
         }
@@ -39,7 +39,7 @@ public class SetCommandTool {
     }
 
     public static Integer scard(SyxCacheDb db, String key) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -51,7 +51,7 @@ public class SetCommandTool {
     }
 
     public static Integer sismember(SyxCacheDb db, String key, String value) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -63,7 +63,7 @@ public class SetCommandTool {
     }
 
     public static Integer srem(SyxCacheDb db, String keys, String[] setKeys) {
-        CacheEntity<?> entity = db.getMap().get(keys);
+        CacheEntity<?> entity = db.get(keys);
         if (Objects.isNull(entity)) {
             return 0;
         }
@@ -78,7 +78,7 @@ public class SetCommandTool {
     }
 
     public static String[] spop(SyxCacheDb db, String key, int count) {
-        CacheEntity<?> entity = db.getMap().get(key);
+        CacheEntity<?> entity = db.get(key);
         if (Objects.isNull(entity)) {
             return null;
         }

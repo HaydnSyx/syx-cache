@@ -1,16 +1,18 @@
-package cn.syx.cache.command.hash;
+package cn.syx.cache.command.zset;
 
 import cn.syx.cache.command.AbstractCommand;
-import cn.syx.cache.command.tool.HashCommandTool;
+import cn.syx.cache.command.tool.ZSetCommandTool;
 import cn.syx.cache.db.SyxCacheDb;
 import cn.syx.cache.domain.CacheCommandRequest;
 import cn.syx.cache.domain.Reply;
 
-public class HMgetCommand extends AbstractCommand<String[]> {
+import java.util.Objects;
+
+public class ZPopmaxCommand extends AbstractCommand<String[]> {
 
     @Override
     public String name() {
-        return "HMGET";
+        return "ZPOPMAX";
     }
 
     @Override
@@ -21,7 +23,7 @@ public class HMgetCommand extends AbstractCommand<String[]> {
     @Override
     public Reply<String[]> doExec(SyxCacheDb db, CacheCommandRequest req) {
         String key = req.getKey();
-        String[] hkeys = req.getValuesSkipKey();
-        return Reply.array(HashCommandTool.hmget(db, key, hkeys));
+        String value = req.getValue();
+        return Reply.array(ZSetCommandTool.zpopmax(db, key, Objects.nonNull(value) ? Integer.parseInt(value) : 1));
     }
 }

@@ -24,6 +24,10 @@ public class CacheTask {
     public static CacheTask create(ChannelHandlerContext ctx, String[] request) {
         // 命令
         String cmd = request[0].toUpperCase(Locale.ROOT);
+        if (Objects.equals(cmd, "CONFIG")) {
+            cmd = cmd + " " + request[1].toUpperCase(Locale.ROOT);
+            request = Arrays.copyOfRange(request, 1, request.length);
+        }
 
         return CacheTask.builder()
                 .ctx(ctx)
